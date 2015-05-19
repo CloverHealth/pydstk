@@ -1,7 +1,7 @@
 The MIT License (MIT)
 
 Original work copyright (c) 2013 Pete Warden
-Modified work copyright (c) 2015 CloverHealth, Inc.
+Modified work copyright (c) 2015 CloverHealth Labs, LLC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
