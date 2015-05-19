@@ -13,7 +13,7 @@ CLASSIFIERS = [
 
 setup(
   name='pydstk',
-  version='0.1.0',
+  version='0.1.1',
   description='Data Science Toolkit client library for Python',
   py_modules=['pydstk'],
   author='George Leslie-Waksman',
@@ -21,5 +21,8 @@ setup(
   url='http://github.com/CloverHealth/pydstk',
   license='MIT',
   classifiers=CLASSIFIERS,
+  install_requires=[
+    'requests>=2.7.0',
+  ],
   keywords='dstk',
 )

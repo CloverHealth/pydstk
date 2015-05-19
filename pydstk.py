@@ -9,13 +9,13 @@ See http://www.datasciencetoolkit.org/developerdocs#python for more details.
 """
 
 import csv
-import http.client
+import io
 import json
 import mimetypes
 import os
 import re
+import requests
 import sys
-import urllib.request
 
 API_BASE = 'http://www.datasciencetoolkit.org'
 API_VERSION = 50
@@ -49,9 +49,9 @@ class DSTK(object):
     api_url = '%s/info' % self.api_base
 
     try:
-      response_string = urllib.request.urlopen(api_url).read()
-      response = json.loads(response_string)
-      server_api_version = response['version']
+      response = requests.get(api_url)
+      response_data = response.json()
+      server_api_version = response_data['version']
     except:
       raise Exception(
         'The server at %s does not seem to be running DSTK, '
@@ -69,14 +69,13 @@ class DSTK(object):
 
     api_url = '%s/ip2coordinates' % self.api_base
     api_body = json.dumps(ips)
-    response_string = urllib.request.urlopen(api_url, api_body).read()
+    response = requests.post(api_url, data=api_body)
+    response_data = response.json()
 
-    response = json.loads(response_string)
+    if 'error' in response_data:
+      raise Exception(response_data['error'])
 
-    if 'error' in response:
-      raise Exception(response['error'])
-
-    return response
+    return response_data
 
   def street2coordinates(self, addresses):
 
@@ -85,175 +84,131 @@ class DSTK(object):
 
     api_url = '%s/street2coordinates' % self.api_base
     api_body = json.dumps(addresses)
-    response_string = urllib.request.urlopen(api_url, api_body).read()
-    response = json.loads(response_string)
+    response = requests.post(api_url, data=api_body)
+    response_data = response.json()
 
-    if 'error' in response:
-      raise Exception(response['error'])
+    if 'error' in response_data:
+      raise Exception(response_data['error'])
 
-    return response
+    return response_data
 
   def coordinates2politics(self, coordinates):
 
     api_url = '%s/coordinates2politics' % self.api_base
     api_body = json.dumps(coordinates)
-    response_string = urllib.request.urlopen(api_url, api_body).read()
-    response = json.loads(response_string)
+    response = requests.post(api_url, data=api_body)
+    response_data = response.json()
 
-    if 'error' in response:
-      raise Exception(response['error'])
+    if 'error' in response_data:
+      raise Exception(response_data['error'])
 
-    return response
+    return response_data
 
   def text2places(self, text):
 
     api_url = '%s/text2places' % self.api_base
     api_body = text
-    response_string = urllib.request.urlopen(api_url, api_body).read()
-    response = json.loads(response_string)
+    response = requests.post(api_url, data=api_body)
+    response_data = response.json()
 
-    if 'error' in response:
-      raise Exception(response['error'])
+    if 'error' in response_data:
+      raise Exception(response_data['error'])
 
-    return response
+    return response_data
 
-  def file2text(self, file_name, file_data):
+  def file2text(self, file_name, file_object):
 
-    host = self.api_base.replace('http://', '')
+    api_url = '%s/file2text' % self.api_base
+    content_type = guess_content_type(file_name)
+    files = {'file': ('inputfile', file_object, content_type)}
+    response = requests.post(api_url, files=files)
+    response_data = response.text
 
-    response = post_multipart(
-      host, '/file2text', [], [('inputfile', file_name, file_data)])
-
-    return response
+    return response_data
 
   def text2sentences(self, text):
 
     api_url = '%s/text2sentences' % self.api_base
     api_body = text
-    response_string = urllib.request.urlopen(api_url, api_body).read()
-    response = json.loads(response_string)
+    response = requests.post(api_url, data=api_body)
+    response_data = response.json()
 
-    if 'error' in response:
-      raise Exception(response['error'])
+    if 'error' in response_data:
+      raise Exception(response_data['error'])
 
-    return response
+    return response_data
 
   def html2text(self, html):
 
     api_url = '%s/html2text' % self.api_base
     api_body = html
-    response_string = urllib.request.urlopen(api_url, api_body).read()
-    response = json.loads(response_string)
+    response = requests.post(api_url, data=api_body)
+    response_data = response.json()
 
-    if 'error' in response:
-      raise Exception(response['error'])
+    if 'error' in response_data:
+      raise Exception(response_data['error'])
 
-    return response
+    return response_data
 
   def html2story(self, html):
 
     api_url = '%s/html2story' % self.api_base
     api_body = html
-    response_string = urllib.request.urlopen(api_url, api_body).read()
-    response = json.loads(response_string)
+    response = requests.post(api_url, data=api_body)
+    response_data = response.json()
 
-    if 'error' in response:
-      raise Exception(response['error'])
+    if 'error' in response_data:
+      raise Exception(response_data['error'])
 
-    return response
+    return response_data
 
   def text2people(self, text):
 
     api_url = '%s/text2people' % self.api_base
     api_body = text
-    response_string = urllib.request.urlopen(api_url, api_body).read()
-    response = json.loads(response_string)
+    response = requests.post(api_url, data=api_body)
+    response_data = response.json()
 
-    if 'error' in response:
-      raise Exception(response['error'])
+    if 'error' in response_data:
+      raise Exception(response_data['error'])
 
-    return response
+    return response_data
 
   def text2times(self, text):
 
     api_url = '%s/text2times' % self.api_base
     api_body = text
-    response_string = urllib.request.urlopen(api_url, api_body).read()
-    response = json.loads(response_string)
+    response = requests.post(api_url, data=api_body)
+    response_data = response.json()
 
-    if 'error' in response:
-      raise Exception(response['error'])
+    if 'error' in response_data:
+      raise Exception(response_data['error'])
 
-    return response
+    return response_data
 
   def text2sentiment(self, text):
 
     api_url = '%s/text2sentiment' % self.api_base
     api_body = text
-    response_string = urllib.request.urlopen(api_url, api_body).read()
-    response = json.loads(response_string)
+    response = requests.post(api_url, data=api_body)
+    response_data = response.json()
 
-    if 'error' in response:
-      raise Exception(response['error'])
+    if 'error' in response_data:
+      raise Exception(response_data['error'])
 
-    return response
+    return response_data
 
   def coordinates2statistics(self, coordinates):
 
     api_url = '%s/coordinates2statistics' % self.api_base
     api_body = json.dumps(coordinates)
-    response_string = urllib.request.urlopen(api_url, api_body).read()
-    response = json.loads(response_string)
+    response = requests.post(api_url, data=api_body)
+    response_data = response.json()
 
-    if 'error' in response:
-      raise Exception(response['error'])
+    if 'error' in response_data:
+      raise Exception(response_data['error'])
 
-    return response
-
-# We need to post files as multipart form data, and Python has no native function for
-# that, so these utility functions implement what we need.
-# See http://code.activestate.com/recipes/146306/
-def post_multipart(host, selector, fields, files):
-  """Post fields and files to an http host as multipart/form-data.
-  fields is a sequence of (name, value) elements for regular form fields.
-  files is a sequence of (name, filename, value) elements for data to be uploaded as files
-  Return the server's response page.
-  """
-  content_type, body = encode_multipart_formdata(fields, files)
-  http_conn = http.client.HTTPConnection(host)
-  http_conn.putrequest('POST', selector)
-  http_conn.putheader('content-type', content_type)
-  http_conn.putheader('content-length', str(len(body)))
-  http_conn.endheaders()
-  http_conn.send(body)
-  http_resp = http_conn.getresponse()
-  return http_resp.read()
-
-
-def encode_multipart_formdata(fields, files):
-  """fields is a sequence of (name, value) elements for regular form fields.
-  files is a sequence of (name, filename, value) elements for data to be uploaded as files
-  Return (content_type, body) ready for httplib.HTTP instance
-  """
-  boundary = '----------ThIs_Is_tHe_bouNdaRY_$'
-  crlf = '\r\n'
-  lines = []
-  for (key, value) in fields:
-    lines.append('--' + boundary)
-    lines.append('Content-Disposition: form-data; name="%s"' % key)
-    lines.append('')
-    lines.append(value)
-  for (key, filename, value) in files:
-    lines.append('--' + boundary)
-    lines.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filename))
-    lines.append('Content-Type: %s' % guess_content_type(filename))
-    lines.append('')
-    lines.append(value)
-  lines.append('--' + boundary + '--')
-  lines.append('')
-  body = crlf.join(lines)
-  content_type = 'multipart/form-data; boundary=%s' % boundary
-  return content_type, body
+    return response_data
 
 def guess_content_type(filename):
   return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
@@ -374,10 +329,10 @@ def file2text_cli(dstk, options, inputs, output):
         full_children.append(os.path.join(file_name, child))
       file2text_cli(dstk, options, full_children, output)
     else:
-      file_data = get_file_or_url_contents(file_name)
+      file_object = get_file_or_url_object(file_name)
       if options['showHeaders']:
         output.write('--File--: '+file_name+"\n")
-      result = dstk.file2text(file_name, file_data)
+      result = dstk.file2text(file_name, file_object)
 
       print(result)
   return
@@ -406,8 +361,8 @@ def text2places_cli(dstk, options, inputs, output):
         full_children.append(os.path.join(file_name, child))
       text2places_cli(dstk, options, full_children, output)
     else:
-      file_data = get_file_or_url_contents(file_name)
-      result = dstk.text2places(file_data)
+      file_object = get_file_or_url_object(file_name)
+      result = dstk.text2places(file_object)
       text2places_format(result, file_name, writer)
 
   return
@@ -443,10 +398,10 @@ def html2text_cli(dstk, options, inputs, output):
         full_children.append(os.path.join(file_name, child))
       html2text_cli(dstk, options, full_children, output)
     else:
-      file_data = get_file_or_url_contents(file_name)
+      file_object = get_file_or_url_object(file_name)
       if options['showHeaders']:
         output.write('--File--: '+file_name+"\n")
-      result = dstk.html2text(file_data)
+      result = dstk.html2text(file_object)
       print(result['text'])
   return
 
@@ -465,10 +420,10 @@ def text2sentences_cli(dstk, options, inputs, output):
         full_children.append(os.path.join(file_name, child))
       text2sentences_cli(dstk, options, full_children, output)
     else:
-      file_data = get_file_or_url_contents(file_name)
+      file_object = get_file_or_url_object(file_name)
       if options['showHeaders']:
         output.write('--File--: '+file_name+"\n")
-      result = dstk.text2sentences(file_data)
+      result = dstk.text2sentences(file_object)
       print(result['sentences'])
 
   return
@@ -488,10 +443,10 @@ def html2story_cli(dstk, options, inputs, output):
         full_children.append(os.path.join(file_name, child))
       html2story_cli(dstk, options, full_children, output)
     else:
-      file_data = get_file_or_url_contents(file_name)
+      file_object = get_file_or_url_object(file_name)
       if options['showHeaders']:
         output.write('--File--: '+file_name+"\n")
-      result = dstk.html2story(file_data)
+      result = dstk.html2story(file_object)
       print(result['story'])
 
   return
@@ -520,8 +475,8 @@ def text2people_cli(dstk, options, inputs, output):
         full_children.append(os.path.join(file_name, child))
       text2places_cli(dstk, options, full_children, output)
     else:
-      file_data = get_file_or_url_contents(file_name)
-      result = dstk.text2people(file_data)
+      file_object = get_file_or_url_object(file_name)
+      result = dstk.text2people(file_object)
       text2people_format(result, file_name, writer)
 
   return
@@ -566,8 +521,8 @@ def text2times_cli(dstk, options, inputs, output):
         full_children.append(os.path.join(file_name, child))
       text2times_cli(dstk, options, full_children, output)
     else:
-      file_data = get_file_or_url_contents(file_name)
-      result = dstk.text2times(file_data)
+      file_object = get_file_or_url_object(file_name)
+      result = dstk.text2times(file_object)
       text2times_format(result, file_name, writer)
 
   return
@@ -610,8 +565,8 @@ def text2sentiment_cli(dstk, options, inputs, output):
         full_children.append(os.path.join(file_name, child))
       text2sentiment_cli(dstk, options, full_children, output)
     else:
-      file_data = get_file_or_url_contents(file_name)
-      for sentence in file_data.split("\n"):
+      file_object = get_file_or_url_object(file_name)
+      for sentence in file_object.split("\n"):
         result = dstk.text2sentiment(sentence)
         text2sentiment_format(result, sentence, 'stdin', writer)
 
@@ -665,12 +620,15 @@ def coordinates2statistics_cli(dstk, options, inputs, output):
 
   return
 
-def get_file_or_url_contents(file_name):
-  if re.match(r'http://', file_name):
-    file_data = urllib.request.urlopen(file_name).read()
+def get_file_or_url_object(file_name):
+  if file_name.startswith('http://') or file_name.startswith('https://'):
+    response = requests.get(file_name)
+    file_object = io.BytesIO(b'')
+    file_object.writelines(response.iter_lines())
+    file_object.seek(0)
   else:
-    file_data = open(file_name).read()
-  return file_data
+    file_object = open(file_name, 'rb')
+  return file_object
 
 def print_usage(message=''):
 
