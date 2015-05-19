@@ -1,0 +1,43 @@
+[MASTER]
+
+[BASIC]
+variable-rgx = [a-z_][a-z0-9_]{1,30}$
+argument-rgx = [a-z_][a-z0-9_]{1,30}$
+
+docstring-min-length=6
+
+include-naming-hint=yes
+
+[VARIABLES]
+dummy-variables-rgx=_|_.*|unused|unused_.*
+
+[MESSAGES CONTROL]
+# See:
+#   http://www.logilab.org/card/pylintfeatures
+#
+# C0111: Missing docstring
+# W0141: Used builtin function (e.g. map, filter) instead of list comprehension
+# W0232: Class has no __init__ method.
+# R0903: Too few public methods
+
+disable = C0111,W0141,W0232,R0903,
+
+[REPORTS]
+output-format=colorized
+include-ids=yes
+
+[DESIGN]
+ignored-argument-names=_|_.*|unused|unused_.*
+
+min-public-methods=0
+
+[SIMILARITIES]
+min-similarity-lines=8
+
+[MISCELLANEOUS]
+notes=FIXME,XXX,TODO
+
+[FORMAT]
+max-line-length=100
+indent-string='  '
+indent-after-paren=2
